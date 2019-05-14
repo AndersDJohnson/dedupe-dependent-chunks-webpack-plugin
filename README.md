@@ -1,4 +1,5 @@
 # dedupe-dependent-chunks-webpack-plugin
+
 > Dedupe modules from chunks known to load only after others with those modules.
 
 [![npm add -D dedupe-dependent-chunks-webpack-plugin (copy)](https://copyhaste.com/i?t=npm%20add%20-D%20dedupe-dependent-chunks-webpack-plugin)](https://copyhaste.com/c?t=npm%20add%20-D%20dedupe-dependent-chunks-webpack-plugin "npm add -D dedupe-dependent-chunks-webpack-plugin (copy)")
@@ -19,7 +20,7 @@ from any other lazy-loaded chunks that your lazy-loaded chunks might load.
 Example `webpack.config.js`:
 
 ```js
-const DedupeDependentChunksPlugin = require('dedupe-dependent-chunks-webpack-plugin');
+const DedupeDependentChunksPlugin = require("dedupe-dependent-chunks-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js",
@@ -38,7 +39,5 @@ module.exports = {
 ```
 
 See [`example`](./example) for an (admittedly trivial) example app.
-
-
 
 Licensed by the [MIT License](./LICENSE).

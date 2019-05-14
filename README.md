@@ -1,6 +1,6 @@
 # dedupe-dependent-chunks-webpack-plugin
 
-> Dedupe modules from chunks known to load only after others with those modules.
+> Webpack plugin to dedupe modules from chunks known to load only after others with those modules.
 
 [![npm add -D dedupe-dependent-chunks-webpack-plugin (copy)](https://copyhaste.com/i?t=npm%20add%20-D%20dedupe-dependent-chunks-webpack-plugin)](https://copyhaste.com/c?t=npm%20add%20-D%20dedupe-dependent-chunks-webpack-plugin "npm add -D dedupe-dependent-chunks-webpack-plugin (copy)")
 

@@ -40,4 +40,13 @@ module.exports = {
 
 See [`example`](./example) for an (admittedly trivial) example app.
 
+With this plugin configured for the `lazy-2` chunk and dependent `lazy-2-1` chunk,
+their shared `dep-1` module dependency is not included in `lazy-2-1` chunk:
+
+![](./example/img/after.png)
+
+Before:
+
+![](./example/img/before.png)
+
 Licensed by the [MIT License](./LICENSE).

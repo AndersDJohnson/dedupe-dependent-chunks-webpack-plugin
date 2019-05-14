@@ -38,6 +38,8 @@ module.exports = {
 };
 ```
 
+---
+
 See [`example`](./example) for an (admittedly trivial) example app.
 
 With this plugin configured for the `lazy-2` chunk and dependent `lazy-2-1` chunk,
@@ -48,5 +50,9 @@ their shared `dep-1` module dependency is not included in `lazy-2-1` chunk:
 Before:
 
 ![](./example/img/before.png)
+
+(images from the [`webpack-bundle-analyzer`](https://github.com/webpack-contrib/webpack-bundle-analyzer))
+
+---
 
 Licensed by the [MIT License](./LICENSE).

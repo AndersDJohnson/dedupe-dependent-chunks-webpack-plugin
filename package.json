@@ -4,7 +4,8 @@
   "description": "Webpack plugin to dedupe modules from chunks known to load only after others with those modules.",
   "main": "src/index.js",
   "scripts": {
-    "test": "cd example && webpack"
+    "example": "cd example && webpack",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Anders D. Johnson",
@@ -12,6 +13,7 @@
   "repository": "https://github.com/AndersDJohnson/dedupe-dependent-chunks-webpack-plugin",
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.8.0",
     "webpack": "^4.31.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.2"

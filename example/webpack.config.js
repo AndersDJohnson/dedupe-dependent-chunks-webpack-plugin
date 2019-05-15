@@ -7,9 +7,7 @@ module.exports = {
   plugins: [
     process.env.NODEDUPE
       ? null
-      : new DedupeDependentChunksPlugin({
-          "lazy-2": ["lazy-2-1"]
-        }),
+      : new DedupeDependentChunksPlugin([[["lazy-2"], ["lazy-2-1"]]]),
     process.env.DEBUG && new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin()
   ].filter(Boolean),

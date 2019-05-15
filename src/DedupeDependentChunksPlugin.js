@@ -4,33 +4,55 @@ const getModuleResources = chunk => getModules(chunk).map(mod => mod.resource);
 
 const name = "DedupeDependentChunksPlugin";
 
+const arrayify = thing => (Array.isArray(thing) ? thing : [thing]);
+
+const normalizeOptions = options => {
+  if (!options) options = [];
+
+  if (!Array.isArray(options)) {
+    options = Object.entries(options).map(([key, value]) => [key, value]);
+  }
+
+  options = options.map(([parents, children]) => [
+    arrayify(parents),
+    arrayify(children)
+  ]);
+
+  return options;
+};
+
 class DedupeDependentChunksPlugin {
   constructor(options) {
-    if (!options) options = {};
+    options = normalizeOptions(options);
 
     // TODO: validate
 
-    this.options = options;
-
-    this.tree = options;
+    this.sets = options;
   }
   apply(compiler) {
     compiler.hooks.thisCompilation.tap(name, compilation => {
       compilation.hooks.optimizeChunks.tap(name, chunks => {
-        Object.entries(this.tree).forEach(([key, value]) => {
-          const parentChunk = chunks.find(chunk => chunk.name === key);
+        this.sets.forEach(set => {
+          let [parents, children] = set;
 
-          const parentModuleResources = getModuleResources(parentChunk);
+          const parentChunks = chunks.filter(chunk =>
+            parents.includes(chunk.name)
+          );
+
+          const parentsModuleResources = parentChunks.reduce(
+            (acc, parentChunk) => [...acc, ...getModuleResources(parentChunk)],
+            []
+          );
 
           const childChunks = chunks.filter(chunk =>
-            value.includes(chunk.name)
+            children.includes(chunk.name)
           );
 
           childChunks.forEach(childChunk => {
             const childModules = getModules(childChunk);
 
             childModules.forEach(childModule => {
-              if (parentModuleResources.includes(childModule.resource)) {
+              if (parentsModuleResources.includes(childModule.resource)) {
                 childChunk.removeModule(childModule);
               }
             });
@@ -40,5 +62,7 @@ class DedupeDependentChunksPlugin {
     });
   }
 }
+
+DedupeDependentChunksPlugin.normalizeOptions = normalizeOptions;
 
 module.exports = DedupeDependentChunksPlugin;

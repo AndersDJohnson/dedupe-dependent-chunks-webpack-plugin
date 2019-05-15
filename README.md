@@ -26,7 +26,8 @@ module.exports = {
   entry: "./src/index.js",
   plugins: [
     new DedupeDependentChunksPlugin({
-      "some-lazy-part": ["a-lazy-component-of-its"]
+      "some-lazy-part": "a-lazy-component-of-its" // dependee, dependent
+      // etc.
     })
   ],
   optimization: {
@@ -36,6 +37,36 @@ module.exports = {
     }
   }
 };
+```
+
+Or, with array of dependents:
+
+```js
+new DedupeDependentChunksPlugin({
+  "some-lazy-part": ["a-lazy-component-of-its"] // dependee, dependents
+  // etc.
+});
+```
+
+Or, as array of pairs:
+
+```js
+new DedupeDependentChunksPlugin([
+  ["some-lazy-part", "a-lazy-component-of-its"] // dependee, dependent
+  // etc.
+]);
+```
+
+Or, if you need to support multiple dependee chunks for a set of dependent chunks, as array of pairs of arrays:
+
+```js
+new DedupeDependentChunksPlugin([
+  [
+    ["some-lazy-part", "another-lazy-part"], // dependees
+    ["a-lazy-component-of-theirs", "another-lazy-component-of-theirs"] // dependents
+  ]
+  // etc.
+]);
 ```
 
 ---

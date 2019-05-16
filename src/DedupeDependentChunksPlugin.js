@@ -1,3 +1,5 @@
+const { intersection } = require("lodash");
+
 const getModules = chunk => [...(chunk._modules ? chunk._modules : [])];
 
 const getModuleResources = chunk => getModules(chunk).map(mod => mod.resource);
@@ -21,6 +23,31 @@ const normalizeOptions = options => {
   return options;
 };
 
+const handleSets = (sets, chunks) =>
+  sets.forEach(set => {
+    let [parents, children] = set;
+
+    const parentChunks = chunks.filter(chunk => parents.includes(chunk.name));
+
+    const parentChunksModules = parentChunks.map(parentChunk =>
+      getModuleResources(parentChunk)
+    );
+
+    const commonParentsModuleResources = intersection(...parentChunksModules);
+
+    const childChunks = chunks.filter(chunk => children.includes(chunk.name));
+
+    childChunks.forEach(childChunk => {
+      const childModules = getModules(childChunk);
+
+      childModules.forEach(childModule => {
+        if (commonParentsModuleResources.includes(childModule.resource)) {
+          childChunk.removeModule(childModule);
+        }
+      });
+    });
+  });
+
 class DedupeDependentChunksPlugin {
   constructor(options) {
     options = normalizeOptions(options);
@@ -32,37 +59,13 @@ class DedupeDependentChunksPlugin {
   apply(compiler) {
     compiler.hooks.thisCompilation.tap(name, compilation => {
       compilation.hooks.optimizeChunks.tap(name, chunks => {
-        this.sets.forEach(set => {
-          let [parents, children] = set;
-
-          const parentChunks = chunks.filter(chunk =>
-            parents.includes(chunk.name)
-          );
-
-          const parentsModuleResources = parentChunks.reduce(
-            (acc, parentChunk) => [...acc, ...getModuleResources(parentChunk)],
-            []
-          );
-
-          const childChunks = chunks.filter(chunk =>
-            children.includes(chunk.name)
-          );
-
-          childChunks.forEach(childChunk => {
-            const childModules = getModules(childChunk);
-
-            childModules.forEach(childModule => {
-              if (parentsModuleResources.includes(childModule.resource)) {
-                childChunk.removeModule(childModule);
-              }
-            });
-          });
-        });
+        handleSets(this.sets, chunks);
       });
     });
   }
 }
 
-DedupeDependentChunksPlugin.normalizeOptions = normalizeOptions;
+DedupeDependentChunksPlugin._normalizeOptions = normalizeOptions;
+DedupeDependentChunksPlugin._handleSets = handleSets;
 
 module.exports = DedupeDependentChunksPlugin;

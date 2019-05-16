@@ -1,6 +1,6 @@
 {
   "name": "dedupe-dependent-chunks-webpack-plugin",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Webpack plugin to dedupe modules from chunks known to load only after others with those modules.",
   "main": "src/index.js",
   "scripts": {

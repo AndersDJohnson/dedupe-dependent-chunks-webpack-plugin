@@ -1,4 +1,4 @@
-const { intersection } = require("lodash");
+const { flattenDeep, intersection } = require("lodash");
 
 const getModules = chunk => [...(chunk._modules ? chunk._modules : [])];
 
@@ -9,16 +9,23 @@ const name = "DedupeDependentChunksPlugin";
 const arrayify = thing => (Array.isArray(thing) ? thing : [thing]);
 
 const normalizeOptions = options => {
-  if (!options) options = [];
+  if (!options) {
+    options = [];
+  }
+
+  if (typeof options === "string") {
+    options = [options];
+  }
 
   if (!Array.isArray(options)) {
     options = Object.entries(options).map(([key, value]) => [key, value]);
   }
 
-  options = options.map(([parents, children]) => [
-    arrayify(parents),
-    arrayify(children)
-  ]);
+  options = options.map(v => {
+    if (typeof v === "string") v = [v];
+    const [parents, children] = v;
+    return [arrayify(parents), children && arrayify(children)].filter(Boolean);
+  });
 
   return options;
 };
@@ -27,6 +34,21 @@ const handleSets = (sets, chunks) =>
   sets.forEach(set => {
     let [parents, children] = set;
 
+    if (!children) {
+      children = parents;
+      parents = undefined;
+    }
+
+    const childChunks = chunks.filter(chunk => children.includes(chunk.name));
+
+    if (!parents) {
+      parents = flattenDeep(
+        [...childChunks[0]._groups.values()].map(g =>
+          g.origins.map(o => [...o.module._chunks].map(c => c.name))
+        )
+      );
+    }
+
     const parentChunks = chunks.filter(chunk => parents.includes(chunk.name));
 
     const parentChunksModules = parentChunks.map(parentChunk =>
@@ -34,8 +56,6 @@ const handleSets = (sets, chunks) =>
     );
 
     const commonParentsModuleResources = intersection(...parentChunksModules);
-
-    const childChunks = chunks.filter(chunk => children.includes(chunk.name));
 
     childChunks.forEach(childChunk => {
       const childModules = getModules(childChunk);

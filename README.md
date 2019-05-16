@@ -17,6 +17,9 @@ Webpack may not understand that your UI guarantees that the latter will _only ev
 The `DedupeDependentChunksWebpackPlugin` lets you manually inform Webpack that it can remove shared modules
 from any other lazy-loaded chunks that your lazy-loaded chunks might load.
 
+If you specify only dependent chunks, we'll automagically determine all the dependee chunks
+that import it, and only remove modules from the dependent that are common to all dependees.
+
 Example `webpack.config.js`:
 
 ```js
@@ -24,12 +27,7 @@ const DedupeDependentChunksPlugin = require("dedupe-dependent-chunks-webpack-plu
 
 module.exports = {
   entry: "./src/index.js",
-  plugins: [
-    new DedupeDependentChunksPlugin({
-      "some-lazy-part": "a-lazy-component-of-its" // dependee, dependent
-      // etc.
-    })
-  ],
+  plugins: [new DedupeDependentChunksPlugin("lazy-2-1")],
   optimization: {
     splitChunks: {
       chunks: "all",
@@ -39,11 +37,28 @@ module.exports = {
 };
 ```
 
+Or, with multiple dependees:
+
+```js
+new DedupeDependentChunksPlugin(
+  ["a-lazy-component", "another-lazy-component"] // dependees
+);
+```
+
+Or, with explicit object of dependee-dependents mapping:
+
+```js
+new DedupeDependentChunksPlugin({
+  "some-lazy-part": "a-lazy-component-of-its" // dependee: dependent
+  // etc.
+});
+```
+
 Or, with array of dependents:
 
 ```js
 new DedupeDependentChunksPlugin({
-  "some-lazy-part": ["a-lazy-component-of-its"] // dependee, dependents
+  "some-lazy-part": ["a-lazy-component-of-its"] // dependee: dependents
   // etc.
 });
 ```

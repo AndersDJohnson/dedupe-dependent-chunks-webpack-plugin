@@ -1,6 +1,10 @@
 const { _normalizeOptions, _handleSets } = require("..");
 
 describe("normalizeOptions", () => {
+  it("works for string only", () => {
+    expect(_normalizeOptions("key")).toEqual([[["key"]]]);
+  });
+
   it("works for objects", () => {
     expect(
       _normalizeOptions({
@@ -15,6 +19,10 @@ describe("normalizeOptions", () => {
         key: ["value", "value2"]
       })
     ).toEqual([[["key"], ["value", "value2"]]]);
+  });
+
+  it("works for array of string child only", () => {
+    expect(_normalizeOptions(["key"])).toEqual([[["key"]]]);
   });
 
   it("works for arrays", () => {
